@@ -8,7 +8,7 @@ var MongoClient=require('mongodb').MongoClient;
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var searchRouter = require('./routes/search');
-
+var monthlyRouter = require("./routes/monthly");
 
 var app = express();
 
@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/Search',searchRouter);
+app.use("/monthly",monthlyRouter);
 
 app.get("/allDataSet",function(req,res){
   MongoClient.connect("mongodb://localhost:27017",{ useNewUrlParser: true },function(err,client){
