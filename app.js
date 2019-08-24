@@ -4,13 +4,18 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var MongoClient=require('mongodb').MongoClient;
+var session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var searchRouter = require('./routes/search');
 var monthlyRouter = require("./routes/monthly");
+var recommendRouter = require("./routes/recommend");
 
 var app = express();
+
+global.MLServer = "http://localhost:5000"
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,11 +26,33 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'keyboard cat',
+  cookie: { maxAge:365*24*60*1000*60 },
+  resave : false,
+  saveUninitialized:true,
+  store: new MongoStore({url:"mongodb://localhost:27017/opendata",useNewUrlParser:true})
+}))
+
+
+app.use("/",function(req,res,next){
+  if(req.session.recomm == undefined){
+    req.session.recomm = {}
+  }
+  next()
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/Search',searchRouter);
 app.use("/monthly",monthlyRouter);
+app.use("/recommend",recommendRouter);
+
+
+
+app.get("/getUserId",function(req,res){
+  res.send(req.session.id)
+})
 
 app.get("/allDataSet",function(req,res){
   MongoClient.connect("mongodb://localhost:27017",{ useNewUrlParser: true },function(err,client){

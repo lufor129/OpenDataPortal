@@ -2,3 +2,9 @@ node_modules/
 titleSource.txt
 *.ipynb
 corpusSegDone.txt
+corpora_dict.dict
+public/dict.txt.big.txt
+sentence_dict.json
+tfidf.model
+word2vec.model
+word2vec.model.txt
