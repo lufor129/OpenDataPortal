@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var MongoClient=require('mongodb').MongoClient;
 var request = require("request");
+var ObjectId = require("mongodb").ObjectId;
 
 // var fs  = require("fs");
 // mongo_dict = {}
@@ -74,7 +75,7 @@ router.get("/SearchByTitle",function(req,res){
       var db = client.db("opendata")
       db.collection("taipei",function(err,collection){
         collection.find({_id:{$in:_id_ls}}).toArray(function(err,items){
-          console.log(items)
+          res.send(items)
           client.close()
         })
         // collection.find({title:{$in:title_ls}}).toArray(function(err,items){
@@ -85,10 +86,5 @@ router.get("/SearchByTitle",function(req,res){
     });
   })  
 });
-
-router.get("/personalRecomm",function(req,res){
-  var session = req.session;
-  
-})
 
 module.exports = router;

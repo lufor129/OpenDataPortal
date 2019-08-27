@@ -28,7 +28,7 @@ router.get("/singleSentRecomm",function(req,res){
       var db = client.db("opendata")
       db.collection("taipei",function(err,collection){
         collection.find({_id:{$in:_id_ls}}).toArray(function(err,items){
-          console.log(items)
+          res.send(items)
           client.close()
         })
         // collection.find({title:{$in:title_ls}}).toArray(function(err,items){
@@ -57,21 +57,22 @@ router.get("/personalRecomm",function(req,res){
     })
     mother = 0;
     for(let i in data) mother+=parseFloat(i)
-    id_ls = []
+    _id_ls = []
     for(let i in data){
-      chance = -Math.log10(parseFloat(i)/mother,)
+      chance = -Math.log10(parseFloat(i)/mother)
       for(let j in data[i]){
         rand = Math.random()
-        if(rand<chance) id_ls.push(data[i][j])
+        if(rand<chance) _id_ls.push(data[i][j])
       }
     }
     // title_result = id_ls.map(function(_id){ return mongo_dict[_id] })
+    _id_ls =_id_ls.map(function(_id){return new ObjectId(_id)})
     MongoClient.connect("mongodb://localhost:27017",{ useNewUrlParser: true },function(err,client){
       if(err) throw err;
       var db = client.db("opendata")
       db.collection("taipei",function(err,collection){
-        collection.find({_id:{$in:id_ls}}).toArray(function(err,items){
-          console.log(items)
+        collection.find({_id:{$in:_id_ls}}).toArray(function(err,items){
+          res.send(items)
           client.close()
         })
         // collection.find({title:{$in:title_result}}).toArray(function(err,items){
